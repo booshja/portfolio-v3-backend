@@ -1,9 +1,13 @@
+// dependencies
 const express = require("express");
 const jsonschema = require("jsonschema");
-const { BadRequestError } = require("../expressError");
-const { validateHuman } = require("../helpers/recaptcha");
+// models
 const Message = require("../models/message");
-const messageNewSchema = require("../schemas/messageNew.json");
+// schemas
+const messageNewSchema = require("../schemas/messages/messageNew.json");
+// util
+const { validateHuman } = require("../helpers/recaptcha");
+const { BadRequestError } = require("../expressError");
 
 const router = express.Router({ mergeParams: true });
 

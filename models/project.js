@@ -1,6 +1,7 @@
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialInsert, sqlForPartialUpdate } = require("../helpers/sql");
+
 /** Project Model */
 class Project {
   /**

@@ -2,10 +2,9 @@
 const express = require("express");
 const jsonschema = require("jsonschema");
 // models
-const Project = require("../models/project");
+const Order = require("../models/order");
 // schemas
-const projectNewSchema = require("../schemas/projects/projectNew.json");
-const projectUpdateSchema = require("../schemas/projects/projectUpdate.json");
+const orderNewSchema = require("../schemas/orders/orderNew.json");
 // util
 const { BadRequestError } = require("../expressError");
 
