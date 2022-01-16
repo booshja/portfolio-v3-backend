@@ -1,4 +1,5 @@
 const { sqlForPartialUpdate, sqlForPartialInsert } = require("../sql");
+const { BadRequestError } = require("../../expressError");
 
 describe("sqlForPartialUpdate", () => {
   it("works: 1 item", () => {
@@ -18,6 +19,15 @@ describe("sqlForPartialUpdate", () => {
       setCols: '"f1"=$1, "f2"=$2',
       values: ["v1", "v2"],
     });
+  });
+
+  it("throws BadRequestError for no data", () => {
+    try {
+      sqlForPartialUpdate({}, []);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
   });
 });
 
@@ -41,5 +51,14 @@ describe("sqlForPartialInsert", () => {
       sqlInsertVals: "$1, $2",
       values: ["v1", "v2"],
     });
+  });
+
+  it("throws BadRequestError for no data", () => {
+    try {
+      sqlForPartialInsert({}, []);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
   });
 });
