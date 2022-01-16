@@ -2,9 +2,9 @@ const { sqlForPartialUpdate, sqlForPartialInsert } = require("../sql");
 
 describe("sqlForPartialUpdate", () => {
   it("works: 1 item", () => {
-    const result = sqlForPartialUpdate({ f1: "v1" }, { f1: "f1", fF2: "f2" });
+    const result = sqlForPartialUpdate({ f1: "v1" }, { f1: "f_1" });
     expect(result).toEqual({
-      setCols: '"f1"=$1',
+      setCols: '"f_1"=$1',
       values: ["v1"],
     });
   });
