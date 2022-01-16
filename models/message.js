@@ -5,6 +5,7 @@ const { BadRequestError, NotFoundError } = require("../expressError");
 class Message {
   /**
    * Create a message, update db, return new message data
+   *
    * @static
    * @async
    * @function create
@@ -19,11 +20,13 @@ class Message {
    * @throws {BadRequestError} Throws error if no data passed to function
    * @throws {BadRequestError} Throws error if missing data.
    */
-  static async create(data) {
+  static async create(message) {
     // check for missing/incomplete data
-    if (!data) throw new BadRequestError("No data.");
-    if (!data.name || !data.email || !data.message)
+    if (!message) throw new BadRequestError("No data.");
+    if (!message.name || !message.email || !message.message)
       throw new BadRequestError("Missing data.");
+    if (typeof message !== "object")
+      throw new BadRequestError("Invalid input.");
 
     const result = await db.query(
       `INSERT INTO messages (name,
@@ -32,14 +35,15 @@ class Message {
         VALUES ($1, $2, $3)
         RETURNING id,
                     name,
+                    email,
                     message,
                     received,
-                    is_archived AS "isArchived`,
-      [data.name, data.email, data.message]
+                    is_archived AS "isArchived"`,
+      [message.name, message.email, message.message]
     );
-    const message = result.rows[0];
+    const newMessage = result.rows[0];
 
-    return message;
+    return newMessage;
   }
 
   /**
@@ -50,7 +54,7 @@ class Message {
    * @function getAll
    * @memberof Message
    *
-   * @yields {Array} An array of message objects: [{ name, email, message, received, is_archived }, ...]
+   * @yields {Array} An array of message objects: [{ name, email, message, received, isArchived }, ...]
    */
   static async getAll() {
     const result = await db.query(
@@ -76,13 +80,17 @@ class Message {
    * @param {Number} - Message ID number
    * @param {Boolean} [archive=true] - True will archive the message, false with un-archive the message. Defaults to true.
    *
-   * @returns {Object} Message object: { name, email, message, received, is_archived }
+   * @returns {Object} Message object: { name, email, message, received, isArchived }
    *
    * @throws {BadRequestError} Throws error if no id provided.
    */
   static async toggleArchive(id, archive = true) {
     // check for missing input
     if (!id) throw new BadRequestError("No id provided.");
+    if (typeof id !== "number")
+      throw new BadRequestError("Invalid input type.");
+    if (typeof archive !== "boolean")
+      throw new BadRequestError("Invalid input type.");
 
     const result = await db.query(
       `UPDATE messages
@@ -120,6 +128,8 @@ class Message {
   static async delete(id) {
     // check for missing input
     if (!id) throw new BadRequestError("No input.");
+    if (typeof id !== "number")
+      throw new BadRequestError("Invalid input type.");
 
     const result = await db.query(
       `DELETE FROM messages
