@@ -6,7 +6,7 @@ const cors = require("cors");
 const { NotFoundError } = require("./expressError");
 
 // routes
-// const messagesRoutes = require("./routes/messages");
+const messagesRoutes = require("./routes/messages");
 
 // logging
 const logger = require("morgan");
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(logger("common"));
 
 // express routes
-// app.use("/messages", messagesRoutes);
+app.use("/messages", messagesRoutes);
 
 /** Handle 404 Errors */
 app.use((req, res, next) => {
