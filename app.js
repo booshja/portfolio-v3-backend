@@ -3,7 +3,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 
 // errors
-// const { NotFoundError } = require("./expressError");
+const { NotFoundError } = require("./expressError");
 
 // routes
 // const messagesRoutes = require("./routes/messages");
