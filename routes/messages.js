@@ -62,9 +62,12 @@ router.get("/", async (req, res, next) => {
  *
  * Authorization Required: admin
  */
-router.patch("/", async (req, res, next) => {
+router.patch("/:id", async (req, res, next) => {
   try {
-    const message = await Message.toggleArchive(+req.body.id, req.body.archive);
+    const message = await Message.toggleArchive(
+      +req.params.id,
+      req.body.archive
+    );
     return res.status(200).json({ message });
   } catch (err) {
     console.log(err);
@@ -79,10 +82,10 @@ router.patch("/", async (req, res, next) => {
  *
  * Authorization Required: admin
  */
-router.delete("/", async (req, res, next) => {
+router.delete("/:id", async (req, res, next) => {
   try {
-    const message = await Message.delete(+req.body.id);
-    return res.status(200).json({ message });
+    const message = await Message.delete(+req.params.id);
+    return res.status(200).json({ msg: message.msg });
   } catch (err) {
     next(err);
   }

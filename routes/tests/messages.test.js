@@ -101,10 +101,11 @@ describe("GET, /messages", () => {
 /***************************** PATCH /messages */
 describe("PATCH, /messages", () => {
   it("archives a message by id", async () => {
-    const resp = await request(app).patch("/messages").send({
-      id: testMessageIds[0],
-      archive: true,
-    });
+    const resp = await request(app)
+      .patch(`/messages/${testMessageIds[0]}`)
+      .send({
+        archive: true,
+      });
     expect(resp.statusCode).toEqual(200);
     expect(resp.body).toEqual({
       message: {
@@ -119,10 +120,11 @@ describe("PATCH, /messages", () => {
   });
 
   it("un-archives a message by id", async () => {
-    const resp = await request(app).patch("/messages").send({
-      id: testMessageIds[0],
-      archive: false,
-    });
+    const resp = await request(app)
+      .patch(`/messages/${testMessageIds[0]}`)
+      .send({
+        archive: false,
+      });
     expect(resp.statusCode).toEqual(200);
     expect(resp.body).toEqual({
       message: {
@@ -137,9 +139,7 @@ describe("PATCH, /messages", () => {
   });
 
   it("gives not found for non-matching id", async () => {
-    const resp = await request(app).patch("/messages").send({
-      id: -1,
-    });
+    const resp = await request(app).patch("/messages/-1");
     expect(resp.statusCode).toEqual(404);
   });
 });
@@ -147,19 +147,20 @@ describe("PATCH, /messages", () => {
 /**************************** DELETE /messages */
 describe("DELETE, /messages", () => {
   it("deletes a message by id", async () => {
-    const resp = await request(app).delete("/messages").send({
-      id: testMessageIds[0],
-    });
+    const resp = await request(app).delete(`/messages/${testMessageIds[0]}`);
     expect(resp.statusCode).toEqual(200);
     expect(resp.body).toEqual({
-      message: { msg: "Deleted." },
+      msg: "Deleted.",
     });
   });
 
   it("gives not found for non-matching id", async () => {
-    const resp = await request(app).delete("/messages").send({
-      id: -1,
-    });
+    const resp = await request(app).delete(`/messages/-1`);
+    expect(resp.statusCode).toEqual(404);
+  });
+
+  it("gives not found for missing id", async () => {
+    const resp = await request(app).delete("/mmessages/").send();
     expect(resp.statusCode).toEqual(404);
   });
 });
