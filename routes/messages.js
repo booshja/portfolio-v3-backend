@@ -44,7 +44,7 @@ router.post("/", async (req, res, next) => {
 });
 
 /**
- * Get a list of all messages
+ * Get an array of all messages
  *
  * Returns [ { id, name, email, message, received, isArchived }, ... ]
  *

@@ -43,9 +43,9 @@ describe("create", () => {
     description: "me@email.com",
     tags: "Testing, testing...",
     thoughts: "This was a cool project!",
-    image_url: "github.com/booshja",
-    github_url: "github.com",
-    live_url: "jacobandes.dev",
+    imageUrl: "github.com/booshja",
+    githubUrl: "github.com",
+    liveUrl: "jacobandes.dev",
   };
 
   const newProjectWithImage = {
@@ -53,8 +53,8 @@ describe("create", () => {
     description: "me@email.com",
     tags: "Testing, testing...",
     thoughts: "This was a cool project!",
-    image_url: "github.com/booshja",
-    github_url: "github.com",
+    imageUrl: "github.com/booshja",
+    githubUrl: "github.com",
   };
 
   const newProjectWithLive = {
@@ -62,8 +62,8 @@ describe("create", () => {
     description: "me@email.com",
     tags: "Testing, testing...",
     thoughts: "This was a cool project!",
-    github_url: "github.com",
-    live_url: "jacobandes.dev",
+    githubUrl: "github.com",
+    liveUrl: "jacobandes.dev",
   };
 
   it("creates new project (all fields)", async () => {

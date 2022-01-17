@@ -34,7 +34,7 @@ class Project {
       !project.description ||
       !project.tags ||
       !project.thoughts ||
-      !project.github_url
+      !project.githubUrl
     )
       throw new BadRequestError("Missing data.");
     if (typeof project !== "object")

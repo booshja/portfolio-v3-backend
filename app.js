@@ -7,6 +7,7 @@ const { NotFoundError } = require("./expressError");
 
 // routes
 const messagesRoutes = require("./routes/messages");
+const projectsRoutes = require("./routes/projects");
 
 // logging
 const logger = require("morgan");
@@ -15,10 +16,11 @@ const app = express();
 app.use(helmet());
 app.use(cors({ origin: "http://localhost:3001/" }));
 app.use(express.json());
-app.use(logger("common"));
+if (process.env.NODE_ENV === "production") app.use(logger("common"));
 
 // express routes
 app.use("/messages", messagesRoutes);
+app.use("/projects", projectsRoutes);
 
 /** Handle 404 Errors */
 app.use((req, res, next) => {
