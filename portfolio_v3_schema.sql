@@ -17,7 +17,8 @@ CREATE TABLE projects (
   thoughts VARCHAR(200) NOT NULL,
   image_url TEXT NOT NULL DEFAULT 'https://images.unsplash.com/photo-1614469723922-c043ad9fd036?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2709&q=80',
   github_url TEXT NOT NULL,
-  live_url TEXT DEFAULT null
+  live_url TEXT DEFAULT null,
+  position INTEGER
 );
 
 CREATE TABLE orders (
@@ -40,5 +41,6 @@ CREATE TABLE orders (
   payment_gateway VARCHAR(6) NOT NULL,
   payment_card_token VARCHAR(40) NOT NULL,
   list_items VARCHAR(200) NOT NULL,
-  total NUMERIC(4, 2) NOT NULL
+  total NUMERIC(4, 2) NOT NULL,
+  status VARCHAR(9) NOT NULL default 'PENDING'
 );

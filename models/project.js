@@ -1,6 +1,12 @@
+// dependencies
 const db = require("../db");
+// utils
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialInsert, sqlForPartialUpdate } = require("../helpers/sql");
+const {
+  sqlForPartialInsert,
+  sqlForPartialUpdate,
+  sqlForBulkPositionUpdate,
+} = require("../helpers/sql");
 
 /** Project Model */
 class Project {
@@ -29,6 +35,8 @@ class Project {
   static async create(project) {
     // check for missing/incomplete data
     if (!project) throw new BadRequestError("No data.");
+    if (typeof project !== "object")
+      throw new BadRequestError("Invalid input type.");
     if (
       !project.name ||
       !project.description ||
@@ -37,8 +45,6 @@ class Project {
       !project.githubUrl
     )
       throw new BadRequestError("Missing data.");
-    if (typeof project !== "object")
-      throw new BadRequestError("Invalid input type.");
 
     const { sqlInsertCols, sqlInsertVals, values } = sqlForPartialInsert(
       project,
@@ -58,7 +64,8 @@ class Project {
                     thoughts,
                     image_url AS "imageUrl",
                     github_url AS "githubUrl",
-                    live_url AS "liveUrl"`;
+                    live_url AS "liveUrl",
+                    position`;
 
     const result = await db.query(querySql, [...values]);
     const newProject = result.rows[0];
@@ -85,7 +92,8 @@ class Project {
               thoughts,
               image_url AS "imageUrl",
               github_url AS "githubUrl",
-              live_url AS "liveUrl"
+              live_url AS "liveUrl",
+              position
         FROM projects`
     );
 
@@ -121,7 +129,8 @@ class Project {
               thoughts,
               image_url AS "imageUrl",
               github_url AS "githubUrl",
-              live_url AS "liveUrl"
+              live_url AS "liveUrl",
+              position
         FROM projects
         WHERE id = $1`,
       [id]
@@ -179,7 +188,8 @@ class Project {
                                   thoughts,
                                   image_url AS "imageUrl",
                                   github_url AS "githubUrl",
-                                  live_url AS "liveUrl"`;
+                                  live_url AS "liveUrl",
+                                  position`;
 
     const result = await db.query(querySql, [...values, id]);
     const newProject = result.rows[0];
@@ -187,6 +197,46 @@ class Project {
     if (!newProject) throw new NotFoundError(`No project: ${id}`);
 
     return newProject;
+  }
+
+  /**
+   * Update positions by array of id's and positions.
+   *
+   * @static
+   * @async
+   * @function updatePositions
+   * @memberof Project
+   * @param {Array} positions - Array of id's and position objects: [ { id, position }, { id, position }, ... ]
+   *
+   * @throws {BadRequestError} Throws error if nothing in array
+   * @throws {BadRequestError} Throws error if type of input is not Array.
+   * @throws {NotFoundError} Throws error and rolls back if an id is not found.
+   */
+  static async updatePositions(positions) {
+    // check input
+    if (!positions) throw new BadRequestError("No input.");
+    if (positions.length === 0) throw new BadRequestError("No data.");
+    if (!(positions instanceof Array))
+      throw new BadRequestError("Invalid input type.");
+
+    let projects;
+    let error;
+
+    try {
+      const { query, paramVals } = sqlForBulkPositionUpdate(positions);
+
+      await db.query(query, paramVals);
+      projects = await db.query(
+        `SELECT id, name, description, thoughts, github_url AS "githubUrl", image_url AS "imageUrl", live_url AS "liveUrl", tags, position FROM projects ORDER BY position ASC`
+      );
+    } catch (err) {
+      await db.query("ROLLBACK");
+      error = err.message;
+    }
+
+    if (error) throw new BadRequestError(error);
+
+    return projects.rows;
   }
 
   /**

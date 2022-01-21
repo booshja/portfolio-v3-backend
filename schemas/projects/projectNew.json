@@ -15,7 +15,14 @@
       "liveUrl": "jacobandes.dev"
     }
   ],
-  "required": ["name", "description", "tags", "thoughts", "githubUrl"],
+  "required": [
+    "name",
+    "description",
+    "tags",
+    "thoughts",
+    "githubUrl",
+    "position"
+  ],
   "properties": {
     "name": {
       "$id": "#/properties/name",
@@ -89,6 +96,13 @@
       "description": "URL to the live deployment of the project (optional).",
       "default": null,
       "examples": ["jacobandes.dev"]
+    },
+    "position": {
+      "$id": "$/properties/position",
+      "type": "integer",
+      "title": "The position schema",
+      "description": "Which position to display the project on the screen.",
+      "examples": [1, 2, 3]
     }
   },
   "additionalProperties": false

@@ -23,10 +23,10 @@ class Message {
   static async create(message) {
     // check for missing/incomplete data
     if (!message) throw new BadRequestError("No data.");
-    if (!message.name || !message.email || !message.message)
-      throw new BadRequestError("Missing data.");
     if (typeof message !== "object")
       throw new BadRequestError("Invalid input.");
+    if (!message.name || !message.email || !message.message)
+      throw new BadRequestError("Missing data.");
 
     const result = await db.query(
       `INSERT INTO messages (name,

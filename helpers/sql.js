@@ -52,4 +52,51 @@ function sqlForPartialInsert(dataToUpdate, jsToSql = []) {
   };
 }
 
-module.exports = { sqlForPartialUpdate, sqlForPartialInsert };
+/**
+ * Helper function for making multiple row update
+ * @function sqlForBulkPositionUpdate
+ * @param {Array} positions - Array of project objects [ { id, position }, ... ]
+ * @param {Object} positions[n] = Project object { id, position }
+ *
+ * @returns {Array} - Array of updated project objects, sorted by position, ascending
+ *
+ * @throws {BadRequestError} Throws error if invalid param type
+ * @throws {BadRequestError} Throws error if empty param array
+ */
+function sqlForBulkPositionUpdate(positions = []) {
+  if (!(positions instanceof Array))
+    throw new BadRequestError("Invalid input type.");
+  if (positions.length === 0) throw new BadRequestError("No data.");
+
+  let query =
+    "UPDATE projects AS p SET position = v.position::integer from (VALUES";
+  const paramVals = [];
+
+  // loop through to create values
+  for (let i = 1; i <= positions.length; i++) {
+    paramVals.push(+positions[i - 1].id);
+    paramVals.push(+positions[i - 1].position);
+  }
+
+  const values = [];
+  let j = 1;
+
+  for (let i = 0; i < positions.length; i++) {
+    values.push(`($${j}, $${j + 1})`);
+    j = j + 2;
+  }
+
+  return {
+    query:
+      query +
+      values.join(", ") +
+      ") AS v(id, position) WHERE v.id::integer = p.id",
+    paramVals,
+  };
+}
+
+module.exports = {
+  sqlForPartialUpdate,
+  sqlForPartialInsert,
+  sqlForBulkPositionUpdate,
+};

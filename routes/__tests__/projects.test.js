@@ -17,6 +17,7 @@ beforeAll(async () => {
       "https://duckduckgo.com/?q=puppies&atb=v303-1&iax=images&ia=images",
     githubUrl: "github.com/booshja/1",
     liveUrl: "jacobandes.dev",
+    position: 1,
   });
 
   const project2 = await Project.create({
@@ -28,6 +29,7 @@ beforeAll(async () => {
       "https://duckduckgo.com/?q=puppies&atb=v303-1&iax=images&ia=images",
     githubUrl: "github.com/booshja/2",
     liveUrl: "jacobandes.dev",
+    position: 2,
   });
 
   testProjectIds.push(project1.id);
@@ -68,6 +70,7 @@ describe("POST, /projects", () => {
           "https://duckduckgo.com/?q=puppies&atb=v303-1&iax=images&ia=images",
         githubUrl: "github.com/booshja/Painting-Joy-frontend",
         liveUrl: "paintingjoy.art",
+        position: 3,
       });
 
     expect(resp.statusCode).toEqual(201);
@@ -90,6 +93,7 @@ describe("POST, /projects", () => {
           "https://duckduckgo.com/?q=puppies&atb=v303-1&iax=images&ia=images",
         githubUrl: "github.com/booshja/Painting-Joy-frontend",
         liveUrl: "paintingjoy.art",
+        position: 3,
       },
     });
   });
@@ -105,6 +109,7 @@ describe("POST, /projects", () => {
         imageUrl:
           "https://duckduckgo.com/?q=aussie+puppies&atb=v303-1&iar=images&iax=images&ia=images",
         githubUrl: "github.com/booshja/SetPlaylist",
+        position: 4,
       });
 
     expect(resp.statusCode).toEqual(201);
@@ -119,6 +124,7 @@ describe("POST, /projects", () => {
           "https://duckduckgo.com/?q=aussie+puppies&atb=v303-1&iar=images&iax=images&ia=images",
         githubUrl: "github.com/booshja/SetPlaylist",
         liveUrl: null,
+        position: 4,
       },
     });
   });
@@ -133,6 +139,7 @@ describe("POST, /projects", () => {
         thoughts: "This was a quick fun one",
         githubUrl: "github.com/booshja/Jobly-frontend",
         liveUrl: "google.com",
+        position: 5,
       });
 
     expect(resp.statusCode).toEqual(201);
@@ -147,6 +154,7 @@ describe("POST, /projects", () => {
         liveUrl: "google.com",
         imageUrl:
           "https://images.unsplash.com/photo-1614469723922-c043ad9fd036?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2709&q=80",
+        position: 5,
       },
     });
   });
@@ -181,6 +189,7 @@ describe("GET, /projects", () => {
             "https://duckduckgo.com/?q=puppies&atb=v303-1&iax=images&ia=images",
           githubUrl: "github.com/booshja/1",
           liveUrl: "jacobandes.dev",
+          position: 1,
         },
         {
           id: expect.any(Number),
@@ -192,6 +201,7 @@ describe("GET, /projects", () => {
             "https://duckduckgo.com/?q=puppies&atb=v303-1&iax=images&ia=images",
           githubUrl: "github.com/booshja/2",
           liveUrl: "jacobandes.dev",
+          position: 2,
         },
       ],
     });
@@ -214,6 +224,7 @@ describe("GET, /projects/:id", () => {
           "https://duckduckgo.com/?q=puppies&atb=v303-1&iax=images&ia=images",
         githubUrl: "github.com/booshja/1",
         liveUrl: "jacobandes.dev",
+        position: 1,
       },
     });
   });
@@ -245,6 +256,7 @@ describe("PATCH, /projects", () => {
             "https://kitchenfarms.com/wp-content/uploads/2017/01/potato-background.jpg",
           githubUrl: "github.com/booshja/Stew",
           liveUrl: "google.com",
+          position: 99,
         },
       });
     expect(resp.statusCode).toBe(200);
@@ -259,6 +271,7 @@ describe("PATCH, /projects", () => {
           "https://kitchenfarms.com/wp-content/uploads/2017/01/potato-background.jpg",
         githubUrl: "github.com/booshja/Stew",
         liveUrl: "google.com",
+        position: 99,
       },
     });
   });
@@ -284,6 +297,7 @@ describe("PATCH, /projects", () => {
           "https://duckduckgo.com/?q=puppies&atb=v303-1&iax=images&ia=images",
         githubUrl: "github.com/booshja/2",
         liveUrl: "jacobandes.dev",
+        position: 2,
       },
     });
   });
@@ -322,9 +336,78 @@ describe("PATCH, /projects", () => {
       });
     expect(resp.statusCode).toBe(404);
   });
+
+  it("gives bad request for invalid data", async () => {
+    const resp = await request(app)
+      .patch("/projects")
+      .send({
+        id: "banana",
+        project: {
+          name: [1, 2, 3],
+        },
+      });
+    expect(resp.statusCode).toBe(400);
+  });
 });
 
-/**************************** DELETE /projects/*/
+/***************************** PATCH /projects */
+describe("PATCH, /projects/positions", () => {
+  it("updates the positions of projects", async () => {
+    const resp = await request(app)
+      .patch("/projects/positions")
+      .send({
+        positions: [
+          { id: testProjectIds[0], position: 2 },
+          { id: testProjectIds[1], position: 1 },
+        ],
+      });
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body).toEqual({
+      projects: [
+        {
+          id: expect.any(Number),
+          name: "Project2",
+          description: "This is a project, 2.",
+          tags: JSON.stringify(["postgres", "express", "react", "node"]),
+          thoughts: "This was a great learning experience",
+          imageUrl:
+            "https://duckduckgo.com/?q=puppies&atb=v303-1&iax=images&ia=images",
+          githubUrl: "github.com/booshja/2",
+          liveUrl: "jacobandes.dev",
+          position: 1,
+        },
+        {
+          id: expect.any(Number),
+          name: "Project1",
+          description: "This is a project, 1.",
+          tags: JSON.stringify(["postgres", "express", "react", "node"]),
+          thoughts: "This was a great learning experience",
+          imageUrl:
+            "https://duckduckgo.com/?q=puppies&atb=v303-1&iax=images&ia=images",
+          githubUrl: "github.com/booshja/1",
+          liveUrl: "jacobandes.dev",
+          position: 2,
+        },
+      ],
+    });
+  });
+
+  it("gives bad request for no data", async () => {
+    const resp = await request(app).patch("/projects/positions").send();
+    expect(resp.statusCode).toBe(400);
+  });
+
+  it("gives bad request for invalid data", async () => {
+    const resp = await request(app)
+      .patch("/projects/positions")
+      .send({
+        positions: ["apples", "bananas", "tomatoes"],
+      });
+    expect(resp.statusCode).toBe(400);
+  });
+});
+
+/*************************** DELETE /projects/ */
 describe("DELETE, /projects", () => {
   it("deletes a project by id", async () => {
     const resp = await request(app).delete(`/projects/${testProjectIds[0]}`);
@@ -334,7 +417,7 @@ describe("DELETE, /projects", () => {
     });
   });
 
-  it("gives bad request for no id", async () => {
+  it("gives not found for no id", async () => {
     const resp = await request(app).delete("/projects");
     expect(resp.statusCode).toBe(404);
   });

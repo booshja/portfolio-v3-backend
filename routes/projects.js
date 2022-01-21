@@ -6,6 +6,7 @@ const Project = require("../models/project");
 // schemas
 const projectNewSchema = require("../schemas/projects/projectNew.json");
 const projectUpdateSchema = require("../schemas/projects/projectUpdate.json");
+const projectPositionBulkUpdateSchema = require("../schemas/projects/projectPositionBulkUpdate.json");
 // util
 const { BadRequestError } = require("../expressError");
 
@@ -100,6 +101,34 @@ router.patch("/", async (req, res, next) => {
 
     const newProject = await Project.update(+req.body.id, project);
     return res.status(200).json({ project: newProject });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * Update all project positions by id and position number.
+ *
+ * Returns { projects: [ { project }, { project }, ... ] }
+ *
+ * Authorization Required: admin
+ */
+router.patch("/positions", async (req, res, next) => {
+  try {
+    if (!req.body.positions || req.body.positions.length === 0)
+      throw new BadRequestError("No data.");
+
+    const validator = jsonschema.validate(
+      req.body,
+      projectPositionBulkUpdateSchema
+    );
+    if (!validator.valid) {
+      const errors = validator.errors.map((e) => e.stack);
+      return next(new BadRequestError(errors));
+    }
+
+    const projects = await Project.updatePositions(req.body.positions);
+    return res.status(200).json({ projects });
   } catch (err) {
     return next(err);
   }

@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "The position bulk update schema",
+  "description": "The position bulk update schema validates incoming project id's and positions for update.",
+  "examples": [
+    {
+      "positions": [
+        {
+          "id": 1,
+          "position": 2
+        },
+        {
+          "id": 2,
+          "position": 1
+        }
+      ]
+    }
+  ],
+  "required": ["positions"],
+  "properties": {
+    "positions": {
+      "$id": "#/properties/positions",
+      "type": "array",
+      "title": "The positions schema",
+      "description": "An array of objects containing id's and positions.",
+      "examples": [
+        [
+          {
+            "id": 1,
+            "position": 2
+          },
+          {
+            "id": 2,
+            "position": 1
+          }
+        ]
+      ],
+      "additionalItems": true,
+      "items": {
+        "$id": "#/properties/positions/items",
+        "anyOf": [
+          {
+            "$id": "#/properties/positions/items/anyOf/0",
+            "type": "object",
+            "title": "The first anyOf schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+              {
+                "id": 1,
+                "position": 2
+              }
+            ],
+            "required": ["id", "position"],
+            "properties": {
+              "id": {
+                "$id": "#/properties/positions/items/anyOf/0/properties/id",
+                "type": "integer",
+                "title": "The id schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0,
+                "examples": [1]
+              },
+              "position": {
+                "$id": "#/properties/positions/items/anyOf/0/properties/position",
+                "type": "integer",
+                "title": "The position schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0,
+                "examples": [2]
+              }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}
